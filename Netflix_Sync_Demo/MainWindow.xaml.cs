@@ -82,7 +82,7 @@ namespace CS_Netflix_WPF_Sync
 
         }
 
-        void QueryMoviesAsync(int year, int first, int count, CancellationToken ct)
+        void QueryMoviesAsync(int year, int first, int count, CancellationToken ct, Action<Movie[]> processMovies)
         {
             var client = new WebClient();
             var url = String.Format(query, year, first, count);
@@ -100,7 +100,7 @@ namespace CS_Netflix_WPF_Sync
                         Url = (string)properties.Element(xd + "Url"),
                         BoxArtUrl = (string)properties.Element(xd + "BoxArt").Element(xd + "LargeUrl")
                     };
-                return movies.ToArray();
+                processMovies(movies.ToArray());
             };
         }
 
