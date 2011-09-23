@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using System.Xml.Linq;
+
 namespace CS_Netflix_WPF_AsyncWithAwait
 {
     public partial class MainWindow : Window
@@ -43,7 +36,7 @@ namespace CS_Netflix_WPF_AsyncWithAwait
         private async void searchButton_Click(object sender, RoutedEventArgs e)
         {
             LoadMoviesAsync(Int32.Parse(textBox.Text));
-            await TaskEx.Delay(20000);
+            await Task.Delay(20000);
             if (cts != null)
             {
                 cts.Cancel();
@@ -77,6 +70,7 @@ namespace CS_Netflix_WPF_AsyncWithAwait
                 while (true)
                 {
                     statusText.Text = string.Format("Searching...  {0} Titles", imageCount);
+                    
                     var movies = await QueryMoviesAsync(year, imageCount, pageSize, cts.Token);
                     if (movies.Length == 0) break;
                     DisplayMovies(movies);
@@ -86,7 +80,7 @@ namespace CS_Netflix_WPF_AsyncWithAwait
             }
             catch (TaskCanceledException)
             {
-                statusText.Text = "Cancelled";
+                if (statusText.Text != "Timeout") statusText.Text = "Cancelled";
             }
             cts = null;
 
@@ -96,6 +90,7 @@ namespace CS_Netflix_WPF_AsyncWithAwait
         {
             var client = new WebClient();
             var url = String.Format(query, year, first, count);
+
             var data = await client.DownloadStringTaskAsync(new Uri(url), ct);
             var movies =
                 from entry in XDocument.Parse(data).Descendants(xa + "entry")

@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 
 namespace CS_Netflix_WPF_Sync
 {
@@ -55,9 +47,6 @@ namespace CS_Netflix_WPF_Sync
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
-            // This cancellation code doesn't work in the sync version...
-            // that's because the UI is locked up while searching for movies,
-            // so it can never even handle the Cancel button click.
             if (cts != null)
             {
                 cts.Cancel();
@@ -87,6 +76,7 @@ namespace CS_Netflix_WPF_Sync
             }
             catch (TaskCanceledException)
             {
+                if (statusText.Text != "Timeout") statusText.Text = "Cancelled";
             }
             cts = null;
 
@@ -96,6 +86,7 @@ namespace CS_Netflix_WPF_Sync
         {
             var client = new WebClient();
             var url = String.Format(query, year, first, count);
+
             var data = client.DownloadString(new Uri(url));
             var movies =
                 from entry in XDocument.Parse(data).Descendants(xa + "entry")
