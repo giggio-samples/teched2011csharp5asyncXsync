@@ -60,7 +60,12 @@ namespace CS_Netflix_WPF_Sync
             statusText.Text = "";
             var pageSize = 10;
             var imageCount = 0;
-            try
+
+            LoadMovies(year, pageSize, imageCount, null);
+        }
+        void LoadMovies(int year, int pageSize, int imageCount, Movie[] movies)
+        {
+        try
             {
                 while (true)
                 {
