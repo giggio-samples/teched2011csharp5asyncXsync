@@ -57,7 +57,6 @@ namespace CS_Netflix_WPF_Sync
         void LoadMovies(int year)
         {
             resultsPanel.Children.Clear();
-            cts = new CancellationTokenSource();
             statusText.Text = "";
             var pageSize = 10;
             var imageCount = 0;
@@ -67,7 +66,7 @@ namespace CS_Netflix_WPF_Sync
                 {
                     statusText.Text = string.Format("Searching...  {0} Titles", imageCount);
                     // (status text doesn't work because the UI never has a breather to show it)
-                    QueryMoviesAsync(year, imageCount, pageSize, cts.Token, movies =>
+                    QueryMoviesAsync(year, imageCount, pageSize, movies =>
                     {
                         if (movies.Length == 0) break;
                         DisplayMovies(movies);
@@ -80,11 +79,10 @@ namespace CS_Netflix_WPF_Sync
             {
                 if (statusText.Text != "Timeout") statusText.Text = "Cancelled";
             }
-            cts = null;
 
         }
 
-        void QueryMoviesAsync(int year, int first, int count, CancellationToken ct, Action<Movie[]> processMovies)
+        void QueryMoviesAsync(int year, int first, int count, Action<Movie[]> processMovies)
         {
             var client = new WebClient();
             var url = String.Format(query, year, first, count);
