@@ -67,7 +67,7 @@ namespace CS_Netflix_WPF_Sync
                 {
                     statusText.Text = string.Format("Searching...  {0} Titles", imageCount);
                     // (status text doesn't work because the UI never has a breather to show it)
-                    var movies = QueryMovies(year, imageCount, pageSize, cts.Token);
+                    var movies = QueryMoviesAsync(year, imageCount, pageSize, cts.Token);
                     if (movies.Length == 0) break;
                     DisplayMovies(movies);
                     imageCount += movies.Length;
@@ -82,13 +82,14 @@ namespace CS_Netflix_WPF_Sync
 
         }
 
-        Movie[] QueryMovies(int year, int first, int count, CancellationToken ct)
+        void QueryMoviesAsync(int year, int first, int count, CancellationToken ct)
         {
             var client = new WebClient();
             var url = String.Format(query, year, first, count);
 
             client.DownloadStringAsync(new Uri(url));
-            client.DownloadStringCompleted += (sender, e) => {
+            client.DownloadStringCompleted += (sender, e) =>
+            {
                 var data = e.Result;
                 var movies =
                     from entry in XDocument.Parse(data).Descendants(xa + "entry")
@@ -100,7 +101,7 @@ namespace CS_Netflix_WPF_Sync
                         BoxArtUrl = (string)properties.Element(xd + "BoxArt").Element(xd + "LargeUrl")
                     };
                 return movies.ToArray();
-            }
+            };
         }
 
         void DisplayMovies(Movie[] movies)
