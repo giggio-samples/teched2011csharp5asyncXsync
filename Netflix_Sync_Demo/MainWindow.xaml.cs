@@ -87,7 +87,7 @@ namespace CS_Netflix_WPF_Sync
             var client = new WebClient();
             var url = String.Format(query, year, first, count);
 
-            var data = client.DownloadString(new Uri(url));
+            client.DownloadStringAsync(new Uri(url));
             var movies =
                 from entry in XDocument.Parse(data).Descendants(xa + "entry")
                 let properties = entry.Element(xm + "properties")
