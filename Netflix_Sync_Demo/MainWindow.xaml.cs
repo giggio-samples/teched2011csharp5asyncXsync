@@ -65,26 +65,18 @@ namespace CS_Netflix_WPF_Sync
         }
         void LoadMovies(int year, int pageSize, int imageCount, Movie[] movies)
         {
-        try
+            while (true)
             {
-                while (true)
+                statusText.Text = string.Format("Searching...  {0} Titles", imageCount);
+                // (status text doesn't work because the UI never has a breather to show it)
+                QueryMoviesAsync(year, imageCount, pageSize, movies =>
                 {
-                    statusText.Text = string.Format("Searching...  {0} Titles", imageCount);
-                    // (status text doesn't work because the UI never has a breather to show it)
-                    QueryMoviesAsync(year, imageCount, pageSize, movies =>
-                    {
-                        if (movies.Length == 0) break;
-                        DisplayMovies(movies);
-                        imageCount += movies.Length;
-                    });
-                }
-                statusText.Text = string.Format("{0} Titles", imageCount);
+                    if (movies.Length == 0) break;
+                    DisplayMovies(movies);
+                    imageCount += movies.Length;
+                });
             }
-            catch (TaskCanceledException)
-            {
-                if (statusText.Text != "Timeout") statusText.Text = "Cancelled";
-            }
-
+            statusText.Text = string.Format("{0} Titles", imageCount);
         }
 
         void QueryMoviesAsync(int year, int first, int count, Action<Movie[]> processMovies)
