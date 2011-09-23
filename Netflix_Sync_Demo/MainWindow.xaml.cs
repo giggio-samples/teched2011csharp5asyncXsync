@@ -67,10 +67,12 @@ namespace CS_Netflix_WPF_Sync
                 {
                     statusText.Text = string.Format("Searching...  {0} Titles", imageCount);
                     // (status text doesn't work because the UI never has a breather to show it)
-                    var movies = QueryMoviesAsync(year, imageCount, pageSize, cts.Token);
-                    if (movies.Length == 0) break;
-                    DisplayMovies(movies);
-                    imageCount += movies.Length;
+                    QueryMoviesAsync(year, imageCount, pageSize, cts.Token, movies =>
+                    {
+                        if (movies.Length == 0) break;
+                        DisplayMovies(movies);
+                        imageCount += movies.Length;
+                    });
                 }
                 statusText.Text = string.Format("{0} Titles", imageCount);
             }
