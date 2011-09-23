@@ -65,18 +65,25 @@ namespace CS_Netflix_WPF_Sync
         }
         void LoadMovies(int year, int pageSize, int imageCount, Movie[] movies)
         {
+            if (movies != null)
+            {
+                if (movies.Length == 0)
+                {
+                    statusText.Text = string.Format("{0} Titles", imageCount);
+                    return;
+                }
+            }
             while (true)
             {
                 statusText.Text = string.Format("Searching...  {0} Titles", imageCount);
                 // (status text doesn't work because the UI never has a breather to show it)
                 QueryMoviesAsync(year, imageCount, pageSize, movies =>
                 {
-                    if (movies.Length == 0) break;
+                    
                     DisplayMovies(movies);
                     imageCount += movies.Length;
                 });
             }
-            statusText.Text = string.Format("{0} Titles", imageCount);
         }
 
         void QueryMoviesAsync(int year, int first, int count, Action<Movie[]> processMovies)
