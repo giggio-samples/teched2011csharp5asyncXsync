@@ -89,6 +89,7 @@ namespace CS_Netflix_WPF_Sync
 
             client.DownloadStringAsync(new Uri(url));
             client.DownloadStringCompleted += (sender, e) => {
+                var data = e.Result;
                 var movies =
                     from entry in XDocument.Parse(data).Descendants(xa + "entry")
                     let properties = entry.Element(xm + "properties")
