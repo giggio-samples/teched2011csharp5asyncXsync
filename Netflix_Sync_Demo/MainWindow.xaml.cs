@@ -88,16 +88,18 @@ namespace CS_Netflix_WPF_Sync
             var url = String.Format(query, year, first, count);
 
             client.DownloadStringAsync(new Uri(url));
-            var movies =
-                from entry in XDocument.Parse(data).Descendants(xa + "entry")
-                let properties = entry.Element(xm + "properties")
-                select new Movie
-                {
-                    Title = (string)entry.Element(xa + "title"),
-                    Url = (string)properties.Element(xd + "Url"),
-                    BoxArtUrl = (string)properties.Element(xd + "BoxArt").Element(xd + "LargeUrl")
-                };
-            return movies.ToArray();
+            client.DownloadStringCompleted += (sender, e) => {
+                var movies =
+                    from entry in XDocument.Parse(data).Descendants(xa + "entry")
+                    let properties = entry.Element(xm + "properties")
+                    select new Movie
+                    {
+                        Title = (string)entry.Element(xa + "title"),
+                        Url = (string)properties.Element(xd + "Url"),
+                        BoxArtUrl = (string)properties.Element(xd + "BoxArt").Element(xd + "LargeUrl")
+                    };
+                return movies.ToArray();
+            }
         }
 
         void DisplayMovies(Movie[] movies)
